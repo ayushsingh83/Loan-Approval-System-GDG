@@ -9,11 +9,17 @@ def preprocess_data(filepath):
     for col in df.columns:
         if df[col].dtype == "object":
             df[col] = df[col].fillna(df[col].mode()[0])
+        else:
+            try:
+                df[col] = df[col].fillna(df[col].median())
+            except:
+                pass
 
     # Encode categorical columns
     encoder = LabelEncoder()
 
-    for col in df.select_dtypes(include="object").columns:
-        df[col] = encoder.fit_transform(df[col])
+    for col in df.columns:
+        if df[col].dtype == "object":
+            df[col] = encoder.fit_transform(df[col])
 
     return df
