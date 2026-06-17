@@ -18,8 +18,9 @@ def preprocess_data(filepath):
     # Encode categorical columns
     encoder = LabelEncoder()
 
-    for col in df.columns:
-        if df[col].dtype == "object":
-            df[col] = encoder.fit_transform(df[col])
+    categorical_cols = df.select_dtypes(include=["object", "string"]).columns
+
+    for col in categorical_cols:
+    	df[col] = encoder.fit_transform(df[col].astype(str))
 
     return df
