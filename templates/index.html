@@ -7,7 +7,7 @@
 
 <h2>Loan Approval Prediction</h2>
 
-<form>
+<form method="POST">
     <label>Gender:</label>
     <input type="text"><br><br>
 
@@ -19,6 +19,10 @@
 
     <button type="submit">Predict</button>
 </form>
+
+{% if prediction %}
+<h3>{{ prediction }}</h3>
+{% endif %}
 
 </body>
 </html>
