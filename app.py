@@ -1,3 +1,8 @@
+import pickle
+
+with open("models/model.pkl", "rb") as file:
+    model = pickle.load(file)
+
 from flask import Flask, render_template
 
 app = Flask(__name__)
