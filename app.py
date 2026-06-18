@@ -19,6 +19,7 @@ def home():
         married = request.form["Married"]
         income = float(request.form["ApplicantIncome"])
 
+        # Convert inputs to numbers
         if gender.lower() == "male":
             gender = 1
         else:
@@ -29,9 +30,11 @@ def home():
         else:
             married = 0
 
+        # Temporary feature vector
         input_data = [gender, married, income]
 
-        prediction = f"Input Vector: {input_data}"
+        # First attempt at model prediction
+        prediction = model.predict([input_data])[0]
 
     return render_template(
         "index.html",
