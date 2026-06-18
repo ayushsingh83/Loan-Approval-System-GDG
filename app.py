@@ -17,24 +17,19 @@ def home():
 
         gender = request.form["Gender"]
         married = request.form["Married"]
-        income = float(request.form["ApplicantIncome"])
+        dependents = int(request.form["Dependents"])
+        education = request.form["Education"]
+        self_employed = request.form["Self_Employed"]
 
-        # Convert inputs to numbers
-        if gender.lower() == "male":
-            gender = 1
-        else:
-            gender = 0
+        applicant_income = float(request.form["ApplicantIncome"])
+        coapplicant_income = float(request.form["CoapplicantIncome"])
+        loan_amount = float(request.form["LoanAmount"])
+        loan_term = float(request.form["Loan_Amount_Term"])
+        credit_history = float(request.form["Credit_History"])
 
-        if married.lower() == "yes":
-            married = 1
-        else:
-            married = 0
+        property_area = request.form["Property_Area"]
 
-        # Temporary feature vector
-        input_data = [gender, married, income]
-
-        # First attempt at model prediction
-        prediction = model.predict([input_data])[0]
+        print("Form data received successfully")
 
     return render_template(
         "index.html",
