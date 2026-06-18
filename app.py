@@ -63,7 +63,12 @@ def home():
             property_area
         ]]
 
-        print(input_data)
+        prediction = model.predict(input_data)
+
+        if prediction[0] == 1:
+            prediction = "Loan Approved"
+        else:
+            prediction = "Loan Rejected"
 
     return render_template(
         "index.html",
