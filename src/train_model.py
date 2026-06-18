@@ -7,6 +7,7 @@ from preprocessing import preprocess_data
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.ensemble import RandomForestClassifier
 
 # Load and preprocess dataset
 df = preprocess_data("dataset/Loan_approval.csv")
@@ -47,3 +48,14 @@ cm = confusion_matrix(y_test, y_pred)
 
 print("\nConfusion Matrix:")
 print(cm)
+
+# Random Forest Model
+rf_model = RandomForestClassifier(random_state=42)
+
+rf_model.fit(X_train, y_train)
+
+rf_predictions = rf_model.predict(X_test)
+
+rf_accuracy = accuracy_score(y_test, rf_predictions)
+
+print("\nRandom Forest Accuracy:", rf_accuracy)
