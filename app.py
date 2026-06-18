@@ -14,7 +14,16 @@ def home():
     prediction = None
 
     if request.method == "POST":
-        prediction = "Loan approved"
+
+        gender = request.form["Gender"]
+        married = request.form["Married"]
+        income = request.form["ApplicantIncome"]
+
+        prediction = (
+            f"Gender: {gender}, "
+            f"Married: {married}, "
+            f"Income: {income}"
+        )
 
     return render_template(
         "index.html",
