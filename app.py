@@ -31,6 +31,40 @@ def home():
 
         print("Form data received successfully")
 
+        # Basic encoding
+        gender = 1 if gender.lower() == "male" else 0
+        married = 1 if married.lower() == "yes" else 0
+        education = 1 if education.lower() == "graduate" else 0
+        self_employed = 1 if self_employed.lower() == "yes" else 0
+
+        property_map = {
+            "rural": 0,
+            "semiurban": 1,
+            "urban": 2
+        }
+
+        property_area = property_map.get(
+            property_area.lower(),
+            0
+        )
+
+        input_data = [[
+            0,                      # Loan_ID placeholder
+            gender,
+            married,
+            dependents,
+            education,
+            self_employed,
+            applicant_income,
+            coapplicant_income,
+            loan_amount,
+            loan_term,
+            credit_history,
+            property_area
+        ]]
+
+        print(input_data)
+
     return render_template(
         "index.html",
         prediction=prediction
