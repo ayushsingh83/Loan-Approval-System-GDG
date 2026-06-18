@@ -17,13 +17,21 @@ def home():
 
         gender = request.form["Gender"]
         married = request.form["Married"]
-        income = request.form["ApplicantIncome"]
+        income = float(request.form["ApplicantIncome"])
 
-        prediction = (
-            f"Gender: {gender}, "
-            f"Married: {married}, "
-            f"Income: {income}"
-        )
+        if gender.lower() == "male":
+            gender = 1
+        else:
+            gender = 0
+
+        if married.lower() == "yes":
+            married = 1
+        else:
+            married = 0
+
+        input_data = [gender, married, income]
+
+        prediction = f"Input Vector: {input_data}"
 
     return render_template(
         "index.html",
