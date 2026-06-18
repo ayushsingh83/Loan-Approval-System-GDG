@@ -59,3 +59,10 @@ rf_predictions = rf_model.predict(X_test)
 rf_accuracy = accuracy_score(y_test, rf_predictions)
 
 print("\nRandom Forest Accuracy:", rf_accuracy)
+
+print("\nModel Comparison:")
+
+if rf_accuracy > accuracy:
+    print("Random Forest performs better.")
+else:
+    print("Logistic Regression performs better.")
