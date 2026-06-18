@@ -1,5 +1,6 @@
 import sys
 import os
+import pickle
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
@@ -66,3 +67,9 @@ if rf_accuracy > accuracy:
     print("Random Forest performs better.")
 else:
     print("Logistic Regression performs better.")
+
+# Save best model
+with open("models/model.pkl", "wb") as file:
+    pickle.dump(rf_model, file)
+
+print("\nModel saved successfully!")
