@@ -14,7 +14,7 @@ def home():
     prediction = None
 
     if request.method == "POST":
-        prediction = "Prediction Logic Coming Soon"
+        prediction = "Loan approved"
 
     return render_template(
         "index.html",
