@@ -13,7 +13,7 @@ import pickle
 
 from flask import Flask, render_template, request
 
-from preprocessing import preprocess_single_record
+from preprocessing import preprocess_custom_record
 
 # --------------------------------------------------------------------------
 # App initialisation
@@ -21,13 +21,12 @@ from preprocessing import preprocess_single_record
 app = Flask(__name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_DIR = os.path.join(BASE_DIR, "model")
+MODEL_DIR = os.path.join(BASE_DIR, "models")
 
 # --------------------------------------------------------------------------
 # Load model artifacts at startup
 # --------------------------------------------------------------------------
 model = None
-scaler = None
 encoders = None
 medians = None
 modes = None
@@ -39,21 +38,20 @@ try:
     with open(os.path.join(MODEL_DIR, "model.pkl"), "rb") as f:
         model = pickle.load(f)
 
-    with open(os.path.join(MODEL_DIR, "scaler.pkl"), "rb") as f:
-        scaler = pickle.load(f)
-
     with open(os.path.join(MODEL_DIR, "encoder.pkl"), "rb") as f:
-        preprocessing_objects = pickle.load(f)
-        encoders = preprocessing_objects["encoders"]
-        medians = preprocessing_objects["medians"]
-        modes = preprocessing_objects["modes"]
-        best_model_name = preprocessing_objects.get("best_model_name", "Model")
+        encoders = pickle.load(f)
 
+    with open(os.path.join(MODEL_DIR, "imputation_values.pkl"), "rb") as f:
+        imputation_values = pickle.load(f)
+        medians = imputation_values["medians"]
+        modes = imputation_values["modes"]
+
+    best_model_name = "Random Forest"
     ARTIFACTS_LOADED = True
 except Exception as exc:  # pragma: no cover - defensive loading
     LOAD_ERROR = str(exc)
     print(f"[WARNING] Could not load model artifacts: {exc}")
-    print("Run 'python train_model.py' first to generate model/*.pkl files.")
+    print("Run 'python train_custom.py' first to generate models/*.pkl files.")
 
 
 # --------------------------------------------------------------------------
@@ -164,8 +162,8 @@ def index():
         else:
             try:
                 # Run the SAME preprocessing pipeline used during training
-                processed_df = preprocess_single_record(
-                    cleaned_data, encoders=encoders, scaler=scaler,
+                processed_df = preprocess_custom_record(
+                    cleaned_data, encoders=encoders,
                     medians=medians, modes=modes,
                 )
 

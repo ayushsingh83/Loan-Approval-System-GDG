@@ -253,3 +253,94 @@ def preprocess_single_record(raw_dict: dict, encoders: dict, scaler, medians: di
     df[SCALED_NUMERIC_COLS] = scaler.transform(df[SCALED_NUMERIC_COLS])
 
     return df
+
+
+def preprocess_data(filepath):
+    import pandas as pd
+    import pickle
+    from sklearn.preprocessing import LabelEncoder
+    import os
+    
+    df = pd.read_csv(filepath)
+    
+    # Drop Loan_ID if present (not predictive and not collected in form)
+    if "Loan_ID" in df.columns:
+        df = df.drop(columns=["Loan_ID"])
+
+    # Fill missing values
+    for col in df.columns:
+        if pd.api.types.is_string_dtype(df[col]) or pd.api.types.is_object_dtype(df[col]):
+            df[col] = df[col].fillna(df[col].mode()[0])
+        else:
+            df[col] = df[col].fillna(df[col].median())
+
+    # Encode categorical columns
+    encoders = {}
+    for col in df.columns:
+        if pd.api.types.is_string_dtype(df[col]) or pd.api.types.is_object_dtype(df[col]):
+            encoder = LabelEncoder()
+            df[col] = encoder.fit_transform(df[col])
+            encoders[col] = encoder
+
+    # Save encoders
+    os.makedirs("models", exist_ok=True)
+    with open("models/encoder.pkl", "wb") as file:
+        pickle.dump(encoders, file)
+
+    # Save medians and modes for imputation
+    medians = {}
+    modes = {}
+    for col in df.columns:
+        if col != "Loan_Status":
+            if col in encoders:
+                modes[col] = df[col].mode()[0]
+            else:
+                medians[col] = df[col].median()
+                
+    with open("models/imputation_values.pkl", "wb") as file:
+        pickle.dump({"medians": medians, "modes": modes}, file)
+
+    return df
+
+
+def preprocess_custom_record(raw_dict: dict, encoders: dict, medians: dict, modes: dict) -> pd.DataFrame:
+    import pandas as pd
+    
+    df = pd.DataFrame([raw_dict])
+    
+    # Convert numerical columns to float so we can impute/calculate correctly
+    for col in ["ApplicantIncome", "CoapplicantIncome", "LoanAmount", "Loan_Amount_Term", "Credit_History"]:
+        if col in df.columns and df[col].values[0] is not None:
+            try:
+                df[col] = pd.to_numeric(df[col])
+            except Exception:
+                pass
+
+    # Fill missing values
+    for col in ["Gender", "Married", "Dependents", "Education", "Self_Employed", "ApplicantIncome", "CoapplicantIncome", "LoanAmount", "Loan_Amount_Term", "Credit_History", "Property_Area"]:
+        if col in df.columns:
+            if df[col].values[0] is None or pd.isna(df[col].values[0]) or df[col].values[0] == "":
+                if col in modes:
+                    df[col] = modes[col]
+                elif col in medians:
+                    df[col] = medians[col]
+
+    # Encode categorical columns
+    for col, encoder in encoders.items():
+        if col in df.columns:
+            # Handle unseen categories gracefully by mapping to the first class
+            df[col] = df[col].astype(str).apply(
+                lambda x: x if x in encoder.classes_ else encoder.classes_[0]
+            )
+            df[col] = encoder.transform(df[col])
+            
+    # Reorder columns to match feature order in training (all columns except Loan_Status)
+    feature_order = [
+        "Gender", "Married", "Dependents", "Education", "Self_Employed",
+        "ApplicantIncome", "CoapplicantIncome", "LoanAmount", "Loan_Amount_Term",
+        "Credit_History", "Property_Area"
+    ]
+    df = df[feature_order]
+    
+    return df
+
