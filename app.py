@@ -1,12 +1,34 @@
 from flask import Flask, render_template, request
 import pickle
 
+from preprocessing import (
+preprocess_single_record
+)
+
 app = Flask(__name__)
 
-# Load trained model
+# Load model
+
 with open("models/model.pkl", "rb") as file:
     model = pickle.load(file)
 
+# Load scaler
+
+with open("models/scaler.pkl", "rb") as file:
+    scaler = pickle.load(file)
+
+# Load encoders
+
+with open("models/encoder.pkl", "rb") as file:
+    encoders = pickle.load(file)
+
+# Load imputation values
+
+with open("models/imputation_values.pkl", "rb") as file:
+    imputation_data = pickle.load(file)
+
+    medians = imputation_data["medians"]
+    modes = imputation_data["modes"]
 
 @app.route("/", methods=["GET", "POST"])
 def home():
@@ -15,67 +37,34 @@ def home():
 
     if request.method == "POST":
 
-        gender = request.form["Gender"]
-        married = request.form["Married"]
-        dependents = int(request.form["Dependents"])
-        education = request.form["Education"]
-        self_employed = request.form["Self_Employed"]
+        raw_input = {
+            "Gender": request.form["Gender"],
+            "Married": request.form["Married"],
+            "Dependents": request.form["Dependents"],
+            "Education": request.form["Education"],
+            "Self_Employed": request.form["Self_Employed"],
+            "ApplicantIncome": float(request.form["ApplicantIncome"]),
+            "CoapplicantIncome": float(request.form["CoapplicantIncome"]),
+            "LoanAmount": float(request.form["LoanAmount"]),
+            "Loan_Amount_Term": float(request.form["Loan_Amount_Term"]),
+            "Credit_History": float(request.form["Credit_History"]),
+            "Property_Area": request.form["Property_Area"],
+        }
 
-        applicant_income = float(request.form["ApplicantIncome"])
-        coapplicant_income = float(request.form["CoapplicantIncome"])
-        loan_amount = float(request.form["LoanAmount"])
-        loan_term = float(request.form["Loan_Amount_Term"])
-        credit_history = float(request.form["Credit_History"])
+        processed_input = preprocess_single_record(
+            raw_input,
+            encoders,
+            scaler,
+            medians,
+            modes
+        )
 
-        property_area = request.form["Property_Area"]
+        prediction = model.predict(processed_input)
 
-        # Input Validation
-        if applicant_income < 0:
-            prediction = "Invalid Applicant Income"
-
-        elif loan_amount < 0:
-            prediction = "Invalid Loan Amount"
-
+        if prediction[0] == 1:
+            prediction = "Loan Approved"
         else:
-
-            # Basic Encoding
-            gender = 1 if gender.lower() == "male" else 0
-            married = 1 if married.lower() == "yes" else 0
-            education = 1 if education.lower() == "graduate" else 0
-            self_employed = 1 if self_employed.lower() == "yes" else 0
-
-            property_map = {
-                "rural": 0,
-                "semiurban": 1,
-                "urban": 2
-            }
-
-            property_area = property_map.get(
-                property_area.lower(),
-                0
-            )
-
-            input_data = [[
-                0,                      # Loan_ID placeholder
-                gender,
-                married,
-                dependents,
-                education,
-                self_employed,
-                applicant_income,
-                coapplicant_income,
-                loan_amount,
-                loan_term,
-                credit_history,
-                property_area
-            ]]
-
-            prediction = model.predict(input_data)
-
-            if prediction[0] == 1:
-                prediction = "Loan Approved"
-            else:
-                prediction = "Loan Rejected"
+            prediction = "Loan Rejected"
 
     return render_template(
         "index.html",
