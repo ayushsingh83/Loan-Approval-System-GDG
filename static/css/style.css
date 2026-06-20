@@ -7,6 +7,7 @@
     --ivory: #F7F5F0;
     --slate: #2C2F36;
     --danger: #C0392B;
+    scroll-behavior: smooth;
 }
 
 body {
