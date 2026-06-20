@@ -1,249 +1,359 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SecureTrust Bank | Loan Approval Predictor</title>
 
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            DEFAULT: '#0B1E3D',
+                            light: '#16315C',
+                        },
+                        emerald: {
+                            DEFAULT: '#0F8A5F',
+                            light: '#14A876',
+                        },
+                        gold: '#D4A857',
+                        ivory: '#F7F5F0',
+                        slate: '#2C2F36',
+                        danger: '#C0392B',
+                    },
+                    fontFamily: {
+                        serif: ['"Source Serif 4"', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+    <link
+        href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+
 <body>
 
-    <!-- ===================== HEADER / NAVBAR ===================== -->
-    <header class="bank-navbar">
-        <nav class="navbar navbar-expand-lg navbar-dark container py-3">
-            <a class="navbar-brand brand-logo" href="/">
-                <i class="bi bi-bank2 me-2"></i>Loan Approval Predictor
+    <header class="absolute top-0 left-0 w-full z-20">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+            <a class="font-serif text-white text-2xl font-bold tracking-wide flex items-center" href="/">
+                <i class="bi bi-bank2 text-gold mr-2"></i>Loan Approval Predictor
             </a>
         </nav>
     </header>
 
-    <!-- ===================== HERO ===================== -->
-    <section class="hero text-center">
-        <div class="container">
-            <h1 class="hero-title">Know your loan status<br class="d-none d-md-block"> in seconds.</h1>
-            <p class="hero-sub">
+    <section
+        class="relative overflow-hidden text-center text-white pt-32 pb-24 px-4 md:pt-40 md:pb-32 -mb-12 h-[100vh]">
+        <video autoplay muted loop playsinline
+            class="absolute top-0 left-0 min-w-full min-h-full w-auto h-auto object-cover z-0 scale-[1.15]">
+            <source src="{{ url_for('static', filename='videos/header-background.mp4') }}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="absolute top-0 left-0 w-full h-full bg-black/50 z-10"></div>
+        <div class="relative z-20 max-w-4xl ml-auto">
+            <h1 class="text-gold font-serif font-bold text-4xl md:text-5xl lg:text-6xl leading-tight mb-4">
+                Know your loan status<br class="d-none d-md-block"> in seconds.
+            </h1>
+            <p class="max-w-2xl mx-auto text-white/80 text-lg md:text-xl font-light">
                 Our model predicts your loan approval chances based on your profile and historical lending data.
             </p>
         </div>
     </section>
 
-    <main class="container pb-5">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 relative z-30">
 
         {% if not artifacts_loaded %}
-        <div class="alert alert-danger shadow-sm" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <div class="flex items-center p-4 mb-6 text-red-800 rounded-xl bg-red-50 border border-red-200 shadow-sm"
+            role="alert">
+            <i class="bi bi-exclamation-triangle-fill mr-2 flex-shrink-0"></i>
             {{ error_message }}
         </div>
         {% endif %}
 
-        <div class="row g-4">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-[4rem]">
 
-            <!-- ===================== APPLICATION FORM ===================== -->
-            <div class="col-lg-7">
-                <div class="card app-card shadow-sm">
-                    <div class="card-body p-4 p-md-5">
-                        <h2 class="card-title-custom mb-1">
-                            <i class="bi bi-clipboard2-data me-2"></i>Loan Application Details
+            <div class="lg:col-span-7">
+                <div class="bg-white rounded-2xl shadow-md border-t-4 border-emerald overflow-hidden">
+                    <div class="p-6 md:p-10">
+                        <h2 class="font-serif text-2xl md:text-3xl font-bold text-navy mb-1">
+                            Loan Application Details
                         </h2>
-                        <p class="text-muted mb-4">Fields marked <span class="text-danger">*</span> are required.</p>
+                        <p class="text-slate-500 text-sm mb-6">Fields marked <span
+                                class="text-red-500 font-bold">*</span> are required.</p>
 
                         {% if error_message and artifacts_loaded %}
-                        <div class="alert alert-danger" role="alert">
-                            <i class="bi bi-x-circle-fill me-2"></i>{{ error_message }}
+                        <div class="flex items-center p-4 mb-6 text-red-800 rounded-lg bg-red-50 border border-red-200"
+                            role="alert">
+                            <i class="bi bi-x-circle-fill mr-2"></i>{{ error_message }}
                         </div>
                         {% endif %}
 
-                        <form method="POST" action="/" novalidate>
+                        <form method="POST" action="/" novalidate class="space-y-6">
 
-                            <div class="section-label">Applicant Profile</div>
-                            <div class="row g-3 mb-4">
-                                <div class="col-md-6">
-                                    <label class="form-label">Gender <span class="text-danger">*</span></label>
-                                    <select class="form-select" name="Gender" required>
-                                        <option value="" disabled {% if not form_values.get('Gender') %}selected{% endif %}>Select gender</option>
-                                        {% for opt in gender_options %}
-                                        <option value="{{ opt }}" {% if form_values.get('Gender') == opt %}selected{% endif %}>{{ opt }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Marital Status <span class="text-danger">*</span></label>
-                                    <select class="form-select" name="Married" required>
-                                        <option value="" disabled {% if not form_values.get('Married') %}selected{% endif %}>Select status</option>
-                                        {% for opt in married_options %}
-                                        <option value="{{ opt }}" {% if form_values.get('Married') == opt %}selected{% endif %}>{{ opt }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Dependents <span class="text-danger">*</span></label>
-                                    <select class="form-select" name="Dependents" required>
-                                        <option value="" disabled {% if not form_values.get('Dependents') %}selected{% endif %}>Select number</option>
-                                        {% for opt in dependents_options %}
-                                        <option value="{{ opt }}" {% if form_values.get('Dependents') == opt %}selected{% endif %}>{{ opt }}{% if opt == '3' %}+{% endif %}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Education <span class="text-danger">*</span></label>
-                                    <select class="form-select" name="Education" required>
-                                        <option value="" disabled {% if not form_values.get('Education') %}selected{% endif %}>Select education</option>
-                                        {% for opt in education_options %}
-                                        <option value="{{ opt }}" {% if form_values.get('Education') == opt %}selected{% endif %}>{{ opt }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Self Employed <span class="text-danger">*</span></label>
-                                    <select class="form-select" name="Self_Employed" required>
-                                        <option value="" disabled {% if not form_values.get('Self_Employed') %}selected{% endif %}>Select option</option>
-                                        {% for opt in self_employed_options %}
-                                        <option value="{{ opt }}" {% if form_values.get('Self_Employed') == opt %}selected{% endif %}>{{ opt }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Property Area <span class="text-danger">*</span></label>
-                                    <select class="form-select" name="Property_Area" required>
-                                        <option value="" disabled {% if not form_values.get('Property_Area') %}selected{% endif %}>Select area</option>
-                                        {% for opt in property_area_options %}
-                                        <option value="{{ opt }}" {% if form_values.get('Property_Area') == opt %}selected{% endif %}>{{ opt }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="section-label">Income Details</div>
-                            <div class="row g-3 mb-4">
-                                <div class="col-md-6">
-                                    <label class="form-label">Applicant Monthly Income (₹) <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">₹</span>
-                                        <input type="number" min="0" step="1" class="form-control" name="ApplicantIncome"
-                                               value="{{ form_values.get('ApplicantIncome', '') }}" placeholder="e.g. 25000" required>
+                            <div>
+                                <div
+                                    class="font-sans font-bold text-xs uppercase tracking-wider text-emerald border-b border-emerald/15 pb-2 mb-4">
+                                    Applicant Profile</div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Gender <span
+                                                class="text-red-500">*</span></label>
+                                        <select
+                                            class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-slate-800 placeholder-slate-400 focus:border-emerald focus:ring-2 focus:ring-emerald/15 outline-none transition-all duration-150 shadow-sm"
+                                            name="Gender" required>
+                                            <option value="" disabled {% if not form_values.get('Gender') %}selected{%
+                                                endif %}>Select gender</option>
+                                            {% for opt in gender_options %}
+                                            <option value="{{ opt }}" {% if form_values.get('Gender')==opt %}selected{%
+                                                endif %}>{{ opt }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Marital Status
+                                            <span class="text-red-500">*</span></label>
+                                        <select
+                                            class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-slate-800 placeholder-slate-400 focus:border-emerald focus:ring-2 focus:ring-emerald/15 outline-none transition-all duration-150 shadow-sm"
+                                            name="Married" required>
+                                            <option value="" disabled {% if not form_values.get('Married') %}selected{%
+                                                endif %}>Select status</option>
+                                            {% for opt in married_options %}
+                                            <option value="{{ opt }}" {% if form_values.get('Married')==opt %}selected{%
+                                                endif %}>{{ opt }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Dependents <span
+                                                class="text-red-500">*</span></label>
+                                        <select
+                                            class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-slate-800 placeholder-slate-400 focus:border-emerald focus:ring-2 focus:ring-emerald/15 outline-none transition-all duration-150 shadow-sm"
+                                            name="Dependents" required>
+                                            <option value="" disabled {% if not form_values.get('Dependents')
+                                                %}selected{% endif %}>Select number</option>
+                                            {% for opt in dependents_options %}
+                                            <option value="{{ opt }}" {% if form_values.get('Dependents')==opt
+                                                %}selected{% endif %}>{{ opt }}{% if opt == '3' %}+{% endif %}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Education <span
+                                                class="text-red-500">*</span></label>
+                                        <select
+                                            class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-slate-800 placeholder-slate-400 focus:border-emerald focus:ring-2 focus:ring-emerald/15 outline-none transition-all duration-150 shadow-sm"
+                                            name="Education" required>
+                                            <option value="" disabled {% if not form_values.get('Education')
+                                                %}selected{% endif %}>Select education</option>
+                                            {% for opt in education_options %}
+                                            <option value="{{ opt }}" {% if form_values.get('Education')==opt
+                                                %}selected{% endif %}>{{ opt }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Self Employed
+                                            <span class="text-red-500">*</span></label>
+                                        <select
+                                            class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-slate-800 placeholder-slate-400 focus:border-emerald focus:ring-2 focus:ring-emerald/15 outline-none transition-all duration-150 shadow-sm"
+                                            name="Self_Employed" required>
+                                            <option value="" disabled {% if not form_values.get('Self_Employed')
+                                                %}selected{% endif %}>Select option</option>
+                                            {% for opt in self_employed_options %}
+                                            <option value="{{ opt }}" {% if form_values.get('Self_Employed')==opt
+                                                %}selected{% endif %}>{{ opt }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Property Area
+                                            <span class="text-red-500">*</span></label>
+                                        <select
+                                            class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-slate-800 placeholder-slate-400 focus:border-emerald focus:ring-2 focus:ring-emerald/15 outline-none transition-all duration-150 shadow-sm"
+                                            name="Property_Area" required>
+                                            <option value="" disabled {% if not form_values.get('Property_Area')
+                                                %}selected{% endif %}>Select area</option>
+                                            {% for opt in property_area_options %}
+                                            <option value="{{ opt }}" {% if form_values.get('Property_Area')==opt
+                                                %}selected{% endif %}>{{ opt }}</option>
+                                            {% endfor %}
+                                        </select>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Co-applicant Monthly Income (₹)</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">₹</span>
-                                        <input type="number" min="0" step="1" class="form-control" name="CoapplicantIncome"
-                                               value="{{ form_values.get('CoapplicantIncome', '0') }}" placeholder="e.g. 0">
+                            </div>
+
+                            <div>
+                                <div
+                                    class="font-sans font-bold text-xs uppercase tracking-wider text-emerald border-b border-emerald/15 pb-2 mb-4">
+                                    Income Details</div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Applicant Monthly
+                                            Income (₹) <span class="text-red-500">*</span></label>
+                                        <div class="flex shadow-sm rounded-lg">
+                                            <span
+                                                class="inline-flex items-center px-3.5 rounded-l-lg border border-r-0 border-slate-300 bg-slate-50 text-slate-500 text-sm">₹</span>
+                                            <input type="number" min="0" step="1"
+                                                class="w-full rounded-r-lg border border-slate-300 px-3.5 py-2 text-slate-800 placeholder-slate-400 focus:border-emerald focus:ring-2 focus:ring-emerald/15 outline-none transition-all duration-150 text-sm"
+                                                name="ApplicantIncome"
+                                                value="{{ form_values.get('ApplicantIncome', '') }}"
+                                                placeholder="e.g. 25000" required>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Co-applicant
+                                            Monthly Income (₹)</label>
+                                        <div class="flex shadow-sm rounded-lg">
+                                            <span
+                                                class="inline-flex items-center px-3.5 rounded-l-lg border border-r-0 border-slate-300 bg-slate-50 text-slate-500 text-sm">₹</span>
+                                            <input type="number" min="0" step="1"
+                                                class="w-full rounded-r-lg border border-slate-300 px-3.5 py-2 text-slate-800 placeholder-slate-400 focus:border-emerald focus:ring-2 focus:ring-emerald/15 outline-none transition-all duration-150 text-sm"
+                                                name="CoapplicantIncome"
+                                                value="{{ form_values.get('CoapplicantIncome', '0') }}"
+                                                placeholder="e.g. 0">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="section-label">Loan Details</div>
-                            <div class="row g-3 mb-4">
-                                <div class="col-md-6">
-                                    <label class="form-label">Loan Amount (in thousands ₹) <span class="text-danger">*</span></label>
-                                    <input type="number" min="0" step="1" class="form-control" name="LoanAmount"
-                                           value="{{ form_values.get('LoanAmount', '') }}" placeholder="e.g. 150" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Loan Amount Term (months) <span class="text-danger">*</span></label>
-                                    <select class="form-select" name="Loan_Amount_Term" required>
-                                        <option value="" disabled {% if not form_values.get('Loan_Amount_Term') %}selected{% endif %}>Select term</option>
-                                        {% for opt in ['120', '180', '240', '360'] %}
-                                        <option value="{{ opt }}" {% if form_values.get('Loan_Amount_Term') == opt %}selected{% endif %}>{{ opt }} months ({{ (opt|int / 12)|int }} years)</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Credit History <span class="text-danger">*</span></label>
-                                    <select class="form-select" name="Credit_History" required>
-                                        <option value="" disabled {% if not form_values.get('Credit_History') %}selected{% endif %}>Select history</option>
-                                        <option value="1" {% if form_values.get('Credit_History') == '1' %}selected{% endif %}>Good (all debts paid)</option>
-                                        <option value="0" {% if form_values.get('Credit_History') == '0' %}selected{% endif %}>Poor / No history</option>
-                                    </select>
+                            <div>
+                                <div
+                                    class="font-sans font-bold text-xs uppercase tracking-wider text-emerald border-b border-emerald/15 pb-2 mb-4">
+                                    Loan Details</div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Loan Amount (in
+                                            thousands ₹) <span class="text-red-500">*</span></label>
+                                        <input type="number" min="0" step="1"
+                                            class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-slate-800 placeholder-slate-400 focus:border-emerald focus:ring-2 focus:ring-emerald/15 outline-none transition-all duration-150 shadow-sm text-sm"
+                                            name="LoanAmount" value="{{ form_values.get('LoanAmount', '') }}"
+                                            placeholder="e.g. 150" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Loan Amount Term
+                                            (months) <span class="text-red-500">*</span></label>
+                                        <select
+                                            class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-slate-800 placeholder-slate-400 focus:border-emerald focus:ring-2 focus:ring-emerald/15 outline-none transition-all duration-150 shadow-sm text-sm"
+                                            name="Loan_Amount_Term" required>
+                                            <option value="" disabled {% if not form_values.get('Loan_Amount_Term')
+                                                %}selected{% endif %}>Select term</option>
+                                            {% for opt in ['120', '180', '240', '360'] %}
+                                            <option value="{{ opt }}" {% if form_values.get('Loan_Amount_Term')==opt
+                                                %}selected{% endif %}>{{ opt }} months ({{ (opt|int / 12)|int }} years)
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">Credit History
+                                            <span class="text-red-500">*</span></label>
+                                        <select
+                                            class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-slate-800 placeholder-slate-400 focus:border-emerald focus:ring-2 focus:ring-emerald/15 outline-none transition-all duration-150 shadow-sm text-sm"
+                                            name="Credit_History" required>
+                                            <option value="" disabled {% if not form_values.get('Credit_History')
+                                                %}selected{% endif %}>Select history</option>
+                                            <option value="1" {% if form_values.get('Credit_History')=='1' %}selected{%
+                                                endif %}>Good (all debts paid)</option>
+                                            <option value="0" {% if form_values.get('Credit_History')=='0' %}selected{%
+                                                endif %}>Poor / No history</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
 
-                            <button type="submit" class="btn btn-predict w-100 py-3 mt-2" {% if not artifacts_loaded %}disabled{% endif %}>
-                                <i class="bi bi-calculator-fill me-2"></i>Check Loan Eligibility
+                            <button type="submit"
+                                class="w-full py-3.5 mt-4 bg-emerald hover:bg-emerald-light text-white font-bold text-lg rounded-xl shadow-md transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 disabled:bg-slate-300 disabled:transform-none disabled:cursor-not-allowed flex items-center justify-center"
+                                {% if not artifacts_loaded %}disabled{% endif %}>
+                                <i class="bi bi-calculator-fill mr-2"></i>Check Loan Eligibility
                             </button>
                         </form>
                     </div>
                 </div>
             </div>
 
-            <!-- ===================== RESULT / INFO PANEL ===================== -->
-            <div class="col-lg-5">
+            <div class="lg:col-span-5 flex flex-col gap-6">
 
                 {% if prediction %}
-                <div class="card result-card shadow-sm mb-4 {% if prediction == 'Approved' %}result-approved{% else %}result-rejected{% endif %}">
-                    <div class="card-body p-4 p-md-5 text-center">
+                <div
+                    class="bg-white rounded-2xl shadow-md border-t-4 overflow-hidden {% if prediction == 'Approved' %}border-emerald{% else %}border-danger{% endif %}">
+                    <div class="p-6 md:p-10 text-center">
                         {% if prediction == 'Approved' %}
-                            <div class="result-icon"><i class="bi bi-check-circle-fill"></i></div>
-                            <h3 class="result-title">Loan Approved ✅</h3>
-                            <p class="result-text">Congratulations! Based on the details provided, your application meets our lending criteria.</p>
+                        <div class="text-5xl mb-4 text-emerald"><i class="bi bi-check-circle-fill"></i></div>
+                        <h3 class="font-serif text-2xl font-bold text-navy mb-2">Loan Approved ✅</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">Congratulations! Based on the details
+                            provided, your application meets our lending criteria.</p>
                         {% else %}
-                            <div class="result-icon"><i class="bi bi-x-circle-fill"></i></div>
-                            <h3 class="result-title">Loan Rejected ❌</h3>
-                            <p class="result-text">Unfortunately, your application does not currently meet our lending criteria.</p>
+                        <div class="text-5xl mb-4 text-danger"><i class="bi bi-x-circle-fill"></i></div>
+                        <h3 class="font-serif text-2xl font-bold text-navy mb-2">Loan Rejected ❌</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">Unfortunately, your application does not
+                            currently meet our lending criteria.</p>
                         {% endif %}
 
                         {% if probability is not none %}
-                        <div class="probability-box mt-4">
-                            <div class="d-flex justify-content-between mb-1">
-                                <span class="fw-semibold">Approval Probability</span>
-                                <span class="fw-bold">{{ probability }}%</span>
+                        <div class="text-left mt-6">
+                            <div class="flex justify-between mb-1 text-sm">
+                                <span class="font-semibold text-slate-700">Approval Probability</span>
+                                <span class="font-bold text-navy">{{ probability }}%</span>
                             </div>
-                            <div class="progress" style="height: 10px;">
-                                <div class="progress-bar {% if prediction == 'Approved' %}bg-success{% else %}bg-danger{% endif %}"
-                                     role="progressbar" data-width="{{ probability }}"
-                                     aria-valuenow="{{ probability }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                                <div class="progress-bar h-full rounded-full transition-all duration-1000 {% if prediction == 'Approved' %}bg-emerald{% else %}bg-danger{% endif %}"
+                                    role="progressbar" data-width="{{ probability }}" aria-valuenow="{{ probability }}"
+                                    aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>
                             </div>
                         </div>
                         {% endif %}
 
-                        <p class="disclaimer mt-4">
-                            <i class="bi bi-info-circle me-1"></i>
-                            This is an automated estimate for informational purposes only and does not
-                            guarantee final loan approval.
+                        <p class="text-xs text-slate-400 mt-6 flex items-center justify-center gap-1">
+                            <i class="bi bi-info-circle"></i>
+                            This is an automated estimate for informational purposes only and does not guarantee final
+                            loan approval.
                         </p>
                     </div>
                 </div>
                 {% endif %}
 
-                <div class="card info-card shadow-sm">
-                    <div class="card-body p-4">
-                        <h5 class="info-title"><i class="bi bi-lightbulb me-2"></i>How it works</h5>
-                        <ul class="info-list">
-                            <li><i class="bi bi-1-circle-fill"></i> Fill in your personal, income, and loan details.</li>
-                            <li><i class="bi bi-2-circle-fill"></i> Our model preprocesses and scales your data exactly as in training.</li>
-                            <li><i class="bi bi-3-circle-fill"></i> A trained classifier predicts approval likelihood instantly.</li>
-                        </ul>
-
-                        <p class="text-muted small mb-0">
-                            Information submitted through this form is used only to generate a
-                            prediction and is not stored or shared with third parties.
-                        </p>
-                    </div>
+                <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-100">
+                    <h5 class="font-serif font-bold text-lg text-navy mb-4 flex items-center"><i
+                            class="bi bi-lightbulb text-gold mr-2"></i>How it works</h5>
+                    <ul class="space-y-4">
+                        <li class="flex items-start text-sm text-slate-600">
+                            <i class="bi bi-1-circle-fill text-emerald mr-2.5 mt-0.5 flex-shrink-0"></i>
+                            <span>Fill in your personal, income, and loan details.</span>
+                        </li>
+                        <li class="flex items-start text-sm text-slate-600">
+                            <i class="bi bi-2-circle-fill text-emerald mr-2.5 mt-0.5 flex-shrink-0"></i>
+                            <span>Our model preprocesses and scales your data exactly as in training.</span>
+                        </li>
+                        <li class="flex items-start text-sm text-slate-600">
+                            <i class="bi bi-3-circle-fill text-emerald mr-2.5 mt-0.5 flex-shrink-0"></i>
+                            <span>A trained classifier predicts approval likelihood instantly.</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
     </main>
 
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             const progressBar = document.querySelector('.progress-bar[data-width]');
             if (progressBar) {
                 const width = progressBar.getAttribute('data-width');
-                progressBar.style.width = width + '%';
+                setTimeout(() => {
+                    progressBar.style.width = width + '%';
+                }, 100);
             }
         });
     </script>
 </body>
+
 </html>
